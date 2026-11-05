@@ -80,14 +80,23 @@ public class ClubInfoRegisterController {
 
         ModelAndView mav = new ModelAndView();
 
-        // セッションからClubIdを取得
-        SessionDto sessionDto = commonService.getSessionDto(session);
-        String leaderClubId = sessionDto.getClubId();
+       
 
         // バリデーション
         /*
          * TODO ➊ バリデーションエラーの際の処理を完成させる。
          */
+        // バリデーションエラーがある場合、入力画面に戻す
+        if (bindingResult.hasErrors()) {
+         mav.addObject("clubInfoRegisterSaveForm" , paramForm);
+         mav.addObject("leaderClubId" , leaderClubId);
+         mav.setViewName("clubInfoRegister");
+            return mav;
+        }
+
+         // セッションからClubIdを取得
+        SessionDto sessionDto = commonService.getSessionDto(session);
+        String leaderClubId = sessionDto.getClubId();
 
         // セッションが切れた場合、エラー画面に遷移
         if (leaderClubId.isEmpty()) {
@@ -100,15 +109,28 @@ public class ClubInfoRegisterController {
             /*
              * TODO ➋ updateClubInfoメソッドの引数に使用しているclubInfoRegisterDtoに、パラメータを設定する。
              */
+            clubInfoRegisterDto.setClubDescription(paramForm.getClubDescription());
+            clubInfoRegisterDto.setLeaderClubId(leaderClubId);
 
             String result = clubInfoRegisterService.updateClubInfo(clubInfoRegisterDto);
 
             // messages.propertiesからメッセージを取得
-            String resultMessage = messageSource.getMessage(result, null, Locale.getDefault());
-
+            String resultMessage = "";
+            if(result != null){
+                resultMessage = messageSource.getMessage(result, null, Locale.getDefault());
+            }
             /*
              * TODO ➌ resultの取得結果に応じて、遷移先を変更する。
              */
+            // 例：resultの値によって処理を分岐（プロジェクトの仕様に合わせて文字列は調整してください）
+            if("updateClubInfo".equals(result)){
+                mav.addObject("updateClubInfo" , resultMessage);
+                mav.addObject("clubInfoRegisterSaveForm", paramForm);
+                mav.addObject("leaderClubId", leaderClubId);
+                mav.setViewName("clubInfoRegister");
+            }else{
+                mav.setViewName("error");
+            }
 
         } catch (Exception e) {
             // DB接続失敗した場合、エラー画面に遷移
@@ -119,3 +141,4 @@ public class ClubInfoRegisterController {
     }
 
 }
+//
