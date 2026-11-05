@@ -20,7 +20,7 @@ public class ClubInfoRegisterRepository {
          */
         String sql = """
                     SELECT club_name, club_description
-                FROM club
+                FROM mst_club
                 WHERE club_id = ?
                 """;
 

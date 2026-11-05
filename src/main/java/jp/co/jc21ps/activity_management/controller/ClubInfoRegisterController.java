@@ -87,10 +87,11 @@ public class ClubInfoRegisterController {
          * TODO ➊ バリデーションエラーの際の処理を完成させる。
          */
         // バリデーションエラーがある場合、入力画面に戻す
-        if (bindingResult.hasErrors()) {
-         mav.addObject("clubInfoRegisterSaveForm" , paramForm);
-         mav.addObject("leaderClubId" , leaderClubId);
-         mav.setViewName("clubInfoRegister");
+         if (bindingResult.hasErrors()) {
+            // 入力値を保持したまま、部署情報登録画面に遷移
+            mav.addObject("clubInfoRegisterSaveForm", paramForm);
+            mav.addObject("leaderClubId", leaderClubId);
+            mav.setViewName("clubInfoRegister");
             return mav;
         }
 
@@ -109,9 +110,8 @@ public class ClubInfoRegisterController {
             /*
              * TODO ➋ updateClubInfoメソッドの引数に使用しているclubInfoRegisterDtoに、パラメータを設定する。
              */
+           clubInfoRegisterDto.setLeaderClubId(leaderClubId);
             clubInfoRegisterDto.setClubDescription(paramForm.getClubDescription());
-            clubInfoRegisterDto.setLeaderClubId(leaderClubId);
-
             String result = clubInfoRegisterService.updateClubInfo(clubInfoRegisterDto);
 
             // messages.propertiesからメッセージを取得
@@ -123,14 +123,17 @@ public class ClubInfoRegisterController {
              * TODO ➌ resultの取得結果に応じて、遷移先を変更する。
              */
             // 例：resultの値によって処理を分岐（プロジェクトの仕様に合わせて文字列は調整してください）
-            if("updateClubInfo".equals(result)){
-                mav.addObject("updateClubInfo" , resultMessage);
-                mav.addObject("clubInfoRegisterSaveForm", paramForm);
-                mav.addObject("leaderClubId", leaderClubId);
-                mav.setViewName("clubInfoRegister");
-            }else{
-                mav.setViewName("error");
-            }
+            if ("updateClubInfo".equals(result)) {
+             // 更新に成功した場合、部署情報登録画面に遷移
+             mav.addObject("updateClubInfo", resultMessage);
+             mav.addObject("clubInfoRegisterSaveForm", paramForm);
+             mav.addObject("leaderClubId", leaderClubId);
+             mav.setViewName("clubInfoRegister");
+             } else {
+                // 更新に失敗した場合、エラー画面に遷移
+             mav.setViewName("error");
+             }
+
 
         } catch (Exception e) {
             // DB接続失敗した場合、エラー画面に遷移
