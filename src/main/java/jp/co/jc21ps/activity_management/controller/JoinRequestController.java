@@ -73,7 +73,7 @@ public class JoinRequestController {
             saveData.setClubDescription(dto.getClubDescription());
             saveData.setClubId(dto.getClubId());
             
-            joinApprovalService.insertRequestInfo(paramDto);
+           
 
             // responseFormにリストを追加
             responseForm.add(saveData);
